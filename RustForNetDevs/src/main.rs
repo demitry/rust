@@ -82,3 +82,92 @@ fn test_object_creation(){
         println!("customer_account_info is None.");
     }
 }
+
+/*
+There are differences in working with strings in Rust and .NET, but the equivalents above should be a good starting point. One of the differences is that Rust strings are UTF-8 encoded, but .NET strings are UTF-16 encoded. Further .NET strings are immutable, but Rust strings can be mutable when declared as such, for example let s = &mut String::from("hello");.
+There are also differences in using strings due to the concept of ownership. To read more about ownership with the String Type, see the Rust Book.
+Notes:
+The Box<str> type in Rust is equivalent to the String type in .NET. The difference between the Box<str> and String types in Rust is that the former stores pointer and size while the latter stores pointer, size, and capacity, allowing String to grow in size. This is similar to the StringBuilder type in .NET once the Rust String is declared mutable.
+*/
+
+// https://microsoft.github.io/rust-for-dotnet-devs/latest/language/strings.html#strings
+fn test_strings(){
+    // C#:
+    // ReadOnlySpan<char> span = "Hello, World!";
+    // string str = "Hello, World!";
+    // StringBuilder sb = new StringBuilder("Hello, World!");
+
+    // Rust:
+    let span: &str = "Hello, World!";
+    let str = Box::new("Hello World!");
+    let mut sb = String::from("Hello World!");
+
+    println!("span: {}", span);
+    println!("str: {}", str);
+    println!("sb: {}", sb);
+
+    // String literals in .NET are immutable String types and allocated on the heap. In Rust, they are &'static str, which is immutable and has a global lifetime and does not get allocated on the heap; they're embedded in the compiled binary.
+
+    // C#
+    //string str = "Hello, World!";
+    //Rust
+    let str: &'static str = "Hello, World!";
+
+    // C# verbatim string literals are equivalent to Rust raw string literals.
+    // C#
+    // string str = @"Hello, \World/!";
+    // Rust:
+    let str = r#"Hello, \World/!"#;
+
+    //C# UTF-8 string literals are equivalent to Rust byte string literals.
+    // C#
+    //ReadOnlySpan<byte> str = "hello"u8;
+    //Rust:
+    let str = b"hello";
+
+    // String Interpolation
+    // C# has a built-in string interpolation feature that allows you to embed expressions inside a string literal. The following example shows how to use string interpolation in C#:
+    // string name = "John";
+    // int age = 42;
+    // string str = $"Person {{ Name: {name}, Age: {age} }}";
+
+    //Rust does not have a built-in string interpolation feature. Instead, the format! macro is used to format a string. The following example shows how to use string interpolation in Rust:
+    let name = "John";
+    let age = 42;
+    let str = format!("Person {{ name: {name}, age: {age} }}");
+}
+
+/*
+class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+
+    public override string ToString() =>
+        $"Person {{ Name: {Name}, Age: {Age} }}";
+}
+
+var person = new Person { Name = "John", Age = 42 };
+Console.Writeline(person);
+*/
+
+use std::fmt::*;
+
+struct Person {
+    name: String,
+    age: i32,
+}
+
+impl Display for Person {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "Person {{ name: {}, age: {} }}", self.name, self.age)
+    }
+}
+
+fn test(){
+    let person = Person {
+        name: "John".to_owned(),
+        age: 42,
+    };
+    println!("{person}");
+}
